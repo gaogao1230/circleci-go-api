@@ -34,6 +34,24 @@ func Router() *gin.Engine {
 		c.JSON(http.StatusOK, user)
 		defer db.Close()
 	})
+
+	r.POST("/user", func(c *gin.Context) {
+		user := User{}
+		now := time.Now()
+		user.CreatedAt = now
+		user.UpdatedAt = now
+	 
+		err := c.BindJSON(&user)
+		if err != nil {
+			c.String(http.StatusBadRequest, "Request is failed: "+err.Error())
+		}
+		db.NewRecord(user)
+		db.Create(&user)
+		if db.NewRecord(user) == false {
+		 c.JSON(http.StatusOK, user)
+		}
+	 })
+
 	return r
 }
 
